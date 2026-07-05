@@ -58,6 +58,16 @@ docker run --rm -p 8787:8787 \
   trace-sync-server
 ```
 
+Published images are available from GitHub Container Registry:
+
+```bash
+docker run --rm -p 8787:8787 \
+  --user "$(id -u):$(id -g)" \
+  -v "$(pwd)/data:/data" \
+  -e TRACE_SYNC_TOKEN="$(openssl rand -hex 32)" \
+  ghcr.io/arjunkomath/trace-sync-server:latest
+```
+
 ## E2E test
 
 The E2E script builds the Docker image, runs a local container, exercises auth, empty state, upload, download, conflict handling, and verifies the mounted JSON state file was written.
@@ -77,7 +87,7 @@ PORT=18788 IMAGE=trace-sync-server:e2e ./e2e.sh
 ```yaml
 services:
   trace-sync:
-    image: trace-sync-server
+    image: ghcr.io/arjunkomath/trace-sync-server:latest
     user: "1000:1000"
     ports:
       - "8787:8787"
