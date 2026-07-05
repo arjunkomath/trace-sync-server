@@ -51,6 +51,7 @@ curl http://localhost:8787/v1/settings \
 
 ```bash
 docker build -t trace-sync-server .
+mkdir -p data
 docker run --rm -p 8787:8787 \
   --user "$(id -u):$(id -g)" \
   -v "$(pwd)/data:/data" \
@@ -61,6 +62,7 @@ docker run --rm -p 8787:8787 \
 Published images are available from GitHub Container Registry:
 
 ```bash
+mkdir -p data
 docker run --rm -p 8787:8787 \
   --user "$(id -u):$(id -g)" \
   -v "$(pwd)/data:/data" \
@@ -83,6 +85,12 @@ PORT=18788 IMAGE=trace-sync-server:e2e ./e2e.sh
 ```
 
 ## Docker Compose
+
+Create the data directory before starting Compose, especially on Linux when running the container as a non-root user:
+
+```bash
+mkdir -p data
+```
 
 ```yaml
 services:

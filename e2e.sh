@@ -105,7 +105,7 @@ status="$(http_status "$TMP_DIR/upload-v1.json" "$BASE_URL/v1/settings" \
   -X PUT \
   -H "Authorization: Bearer ${TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"baseVersion":0,"updatedBy":"e2e-mac-a","settings":{"quickLinks":[{"name":"Docs","url":"https://trace.techulus.xyz"}],"hotkeys":{"launcher":"option+space"}}}')"
+  -d '{"baseVersion":0,"updatedBy":"e2e-mac-a","settings":{"quickLinks":[{"name":"Docs","url":"https://trace.techulus.xyz/?a=1&b=2"}],"hotkeys":{"launcher":"option+space"}}}')"
 [[ "$status" == "200" ]] || fail "expected initial upload 200, got $status"
 json_assert "$TMP_DIR/upload-v1.json" 'data["version"] == 1 and data["updatedBy"] == "e2e-mac-a" and len(data["sha256"]) == 64'
 

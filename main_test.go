@@ -58,6 +58,39 @@ func TestSettingsSyncContract(t *testing.T) {
 	}
 }
 
+func TestSettingsWithAmpersandURLStayReadable(t *testing.T) {
+	s := &server{cfg: config{token: "test-token", dataDir: t.TempDir(), maxBytes: defaultMaxBytes}}
+
+	put := httptest.NewRequest(http.MethodPut, "/v1/settings", strings.NewReader(`{"baseVersion":0,"settings":{"quickLinks":[{"url":"https://example.com/?a=1&b=2"}]}}`))
+	put.Header.Set("Authorization", "Bearer test-token")
+	put.Header.Set("Content-Type", "application/json")
+	putResponse := httptest.NewRecorder()
+	s.withAuth(s.handlePutSettings)(putResponse, put)
+
+	if putResponse.Code != http.StatusOK {
+		t.Fatalf("PUT status = %d, want %d: %s", putResponse.Code, http.StatusOK, putResponse.Body.String())
+	}
+
+	get := httptest.NewRequest(http.MethodGet, "/v1/settings", nil)
+	get.Header.Set("Authorization", "Bearer test-token")
+	getResponse := httptest.NewRecorder()
+	s.withAuth(s.handleGetSettings)(getResponse, get)
+
+	if getResponse.Code != http.StatusOK {
+		t.Fatalf("GET status = %d, want %d: %s", getResponse.Code, http.StatusOK, getResponse.Body.String())
+	}
+
+	nextPut := httptest.NewRequest(http.MethodPut, "/v1/settings", strings.NewReader(`{"baseVersion":1,"settings":{"quickLinks":[]}}`))
+	nextPut.Header.Set("Authorization", "Bearer test-token")
+	nextPut.Header.Set("Content-Type", "application/json")
+	nextPutResponse := httptest.NewRecorder()
+	s.withAuth(s.handlePutSettings)(nextPutResponse, nextPut)
+
+	if nextPutResponse.Code != http.StatusOK {
+		t.Fatalf("second PUT status = %d, want %d: %s", nextPutResponse.Code, http.StatusOK, nextPutResponse.Body.String())
+	}
+}
+
 func TestSettingsRequireBearerToken(t *testing.T) {
 	s := &server{cfg: config{token: "test-token", dataDir: t.TempDir(), maxBytes: defaultMaxBytes}}
 

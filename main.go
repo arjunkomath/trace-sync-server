@@ -131,7 +131,7 @@ func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	// ponytail: a single-process mutex is enough for the official one-binary deployment.
+	// NOTE: a single-process mutex is enough for the official one-binary deployment.
 	// If multiple server processes ever share a volume, switch to SQLite or OS file locks.
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -184,7 +184,7 @@ func (s *server) handlePutSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ponytail: a single-process mutex is enough for the official one-binary deployment.
+	// NOTE: a single-process mutex is enough for the official one-binary deployment.
 	// If multiple server processes ever share a volume, switch to SQLite or OS file locks.
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -258,12 +258,13 @@ func (s *server) readState() (state, error) {
 }
 
 func (s *server) writeState(state state) error {
-	stateData, err := json.Marshal(state)
-	if err != nil {
+	var stateData bytes.Buffer
+	encoder := json.NewEncoder(&stateData)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(state); err != nil {
 		return err
 	}
-	stateData = append(stateData, '\n')
-	return writeFileAtomic(s.statePath(), stateData, 0o600)
+	return writeFileAtomic(s.statePath(), stateData.Bytes(), 0o600)
 }
 
 func writeFileAtomic(path string, data []byte, perm os.FileMode) error {
