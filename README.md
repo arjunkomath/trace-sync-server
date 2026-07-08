@@ -2,6 +2,8 @@
 
 Tiny self-hosted sync server for Trace settings.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/trace-sync-server?referralCode=rXEVYY&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 It stores one plain JSON state file on disk and protects it with one shared bearer token. There are no accounts, database, encryption, pairing flow, web UI, or managed service assumptions.
 
 ## API
